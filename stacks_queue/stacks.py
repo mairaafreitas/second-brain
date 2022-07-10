@@ -24,3 +24,12 @@ class Stack:
             new_node.next = self.top
         self.top = new_node
         self.height += 1
+
+    def pop(self):
+        if not self.height:
+            return None
+        temp = self.top
+        self.top = self.top.next
+        temp.next = None
+        self.height -= 1
+        return temp
