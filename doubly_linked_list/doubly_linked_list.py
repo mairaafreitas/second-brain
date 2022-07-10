@@ -2,9 +2,10 @@ class Node:
     def __init__(self, value) -> None:
         self.value = value
         self.next = None
+        self.prev = None
 
 
-class LinkedList:
+class DoublyLinkedList:
     def __init__(self, value) -> None:
         new_node = Node(value)
         self.head = new_node
@@ -24,6 +25,7 @@ class LinkedList:
             self.head = new_node
         else:
             self.tail.next = new_node
+            new_node.prev = self.tail
             self.tail = new_node
         self.length += 1
         return True
@@ -33,15 +35,12 @@ class LinkedList:
             return None
         if self.length == 1:
             self.head = None
-            self.tail = None
-        else:
-            pre = self.head
-            temp = self.head
-            while temp.next:
-                pre = temp
-                temp = temp.next
-            self.tail = pre
             self.tail.next = None
+        else:
+            temp = self.tail
+            self.tail = self.tail.prev
+            self.tail.next = None
+            temp.prev = None
         self.length -= 1
         return temp
 
@@ -52,77 +51,34 @@ class LinkedList:
             self.tail = new_node
         else:
             new_node.next = self.head
+            self.head.prev = new_node
             self.head = new_node
         self.length += 1
-
         return True
 
     def pop_first(self):
         if not self.length:
             return None
+        temp = self.head
         if self.length == 1:
+            self.head = None
             self.tail = None
         else:
-            temp = self.head
             self.head = self.head.next
             temp.next = None
+            self.head.prev = None
         self.length -= 1
-
-        return temp
+        return temp.value
 
     def get(self, index):
         if index < 0 or index >= self.length:
             return None
         temp = self.head
-        for _ in range(index):
-            temp = temp.next
+        if index < self.length / 2:
+            for _ in range(index):
+                temp = temp.next
+        else:
+            temp = self.tail
+            for _ in range(self.length - 1, index, -1):
+                temp = temp.prev
         return temp
-
-    def set_value(self, index, value):
-        temp = self.get(index)
-        if temp:
-            temp.value = value
-            return True
-        return False
-
-    def insert(self, index, value):
-        if index < 0 or index > self.length:
-            return False
-        if not index:
-            return self.prepend(value)
-        if index == self.length:
-            return self.append(value)
-
-        new_node = Node(value)
-        temp = self.get(index - 1)
-        new_node.next = temp.next
-        temp.next = new_node
-        self.length += 1
-        return True
-
-    def remove(self, index):
-        if index < 0 or index > self.length:
-            return None
-        if not index:
-            return self.pop_first()
-        if index == self.length - 1:
-            return self.pop()
-
-        prev = self.get(index - 1)
-        temp = prev.next
-        prev.next = temp.next
-        temp.next = None
-        self.length -= 1
-        return temp
-
-    def reverse(self):
-        temp = self.head
-        self.head = self.tail
-        self.tail = temp
-        before = None
-
-        for _ in range(self.length):
-            after = temp.next
-            temp.next = before
-            before = temp
-            temp = after
