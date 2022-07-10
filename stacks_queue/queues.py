@@ -18,10 +18,23 @@ class Queue:
             temp = temp.next
 
     def enqueue(self, value):
-        new_node = Queue(value)
+        new_node = Node(value)
         if not self.first:
             self.first = new_node
         else:
             self.last.next = new_node
         self.last = new_node
         self.length += 1
+
+    def dequeue(self):
+        if not self.length:
+            return None
+        temp = self.first
+        if self.length == 1:
+            self.first = None
+            self.last = None
+        else:
+            self.first = self.first.next
+            temp.next = None
+        self.length -= 1
+        return temp
