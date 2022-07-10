@@ -15,3 +15,12 @@ class Stack:
         while temp is not None:
             print(temp.value)
             temp = temp.next
+
+    def push(self, value):
+        new_node = Node(value)
+        if not self.height:
+            new_node.next = None
+        else:
+            new_node.next = self.top
+        self.top = new_node
+        self.height += 1
