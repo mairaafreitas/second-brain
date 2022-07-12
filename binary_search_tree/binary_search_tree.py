@@ -8,3 +8,23 @@ class Node:
 class BinarySearchTree:
     def __init__(self) -> None:
         self.root = None
+
+    def insert(self, value):
+        new_node = Node(value)
+        if not self.root:
+            self.root = new_node
+            return True
+        temp = self.root
+        while True:
+            if new_node.value == temp.value:
+                return False
+            if new_node.value < temp.value:
+                if not temp.left:
+                    temp.left = new_node
+                    return True
+                temp = temp.left
+            else:
+                if not temp.right:
+                    temp.right = new_node
+                    return True
+                temp = temp.right
