@@ -11,3 +11,9 @@ class HashTable:
     def print_table(self):
         for i, val in enumerate(self.data_map):
             print(f"{i}: {val}")
+
+    def set_item(self, key, value):
+        index = self.__hash(key)
+        if not self.data_map[index]:
+            self.data_map[index] = []
+        self.data_map[index].append([key, value])
