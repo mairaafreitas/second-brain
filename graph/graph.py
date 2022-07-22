@@ -18,3 +18,13 @@ class Graph:
             self.adj_list[vertex_1].append(vertex_2)
             return True
         return False
+
+    def remove_edge(self, vertex_1, vertex_2):
+        if vertex_1 in self.adj_list.keys() and vertex_2 in self.adj_list.keys():
+            try:
+                self.adj_list[vertex_1].remove(vertex_2)
+                self.adj_list[vertex_2].remove(vertex_1)
+            except ValueError:
+                pass
+            return True
+        return False
