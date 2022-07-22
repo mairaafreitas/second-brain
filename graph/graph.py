@@ -11,3 +11,10 @@ class Graph:
             self.adj_list[vertex] = []
             return True
         return False
+
+    def add_edge(self, vertex_1, vertex_2):
+        if vertex_1 in self.adj_list.keys() and vertex_2 in self.adj_list.keys():
+            self.adj_list[vertex_2].append(vertex_1)
+            self.adj_list[vertex_1].append(vertex_2)
+            return True
+        return False
