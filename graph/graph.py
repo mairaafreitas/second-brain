@@ -1,3 +1,6 @@
+from os import remove
+
+
 class Graph:
     def __init__(self) -> None:
         self.adj_list = {}
@@ -26,5 +29,13 @@ class Graph:
                 self.adj_list[vertex_2].remove(vertex_1)
             except ValueError:
                 pass
+            return True
+        return False
+
+    def remove_vertex(self, vertex):
+        if vertex in self.adj_list.keys():
+            for other_vertex in self.adj_list[vertex]:
+                self.adj_list[other_vertex].remove(vertex)
+            del self.adj_list[vertex]
             return True
         return False
