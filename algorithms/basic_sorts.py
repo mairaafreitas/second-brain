@@ -1,14 +1,14 @@
 from typing import List
 
 
-def bubble_sort(list: List) -> List:
-    for i in range(len(list) - 1, 0, -1):
+def bubble_sort(my_list: List) -> List:
+    for i in range(len(my_list) - 1, 0, -1):
         for j in range(i):
-            if list[j] > list[j + 1]:
-                temp = list[j]
-                list[j] = list[j + 1]
-                list[j + 1] = temp
-    return list
+            if my_list[j] > my_list[j + 1]:
+                temp = my_list[j]
+                my_list[j] = my_list[j + 1]
+                my_list[j + 1] = temp
+    return my_list
 
 
 print(bubble_sort([4, 2, 6, 5, 1, 3]))
@@ -28,3 +28,17 @@ def selection_sort(my_list: List):
 
 
 print(selection_sort([3, 4, 6, 2, 1, 5]))
+
+
+def insertion_sort(my_list: List) -> List:
+    for i in range(1, len(my_list)):
+        temp = my_list[i]
+        j = i - 1
+        while temp < my_list[j] and j > -1:
+            my_list[j + 1] = my_list[j]
+            my_list[j] = temp
+            j -= 1
+    return my_list
+
+
+print(insertion_sort([4, 2, 6, 5, 1, 3]))
