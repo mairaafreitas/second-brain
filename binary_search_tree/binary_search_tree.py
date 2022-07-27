@@ -59,3 +59,16 @@ class BinarySearchTree:
             if current_node.right:
                 queue.append(current_node.right)
         return results
+
+    def deapth_first_search_pre_order(self):
+        results = []
+
+        def traverse(current_node):
+            results.append(current_node.value)
+            if current_node.left:
+                traverse(current_node.left)
+            if current_node.right:
+                traverse(current_node.right)
+
+        traverse(self.root)
+        return results
