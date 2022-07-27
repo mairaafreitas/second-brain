@@ -85,3 +85,16 @@ class BinarySearchTree:
 
         traverse(self.root)
         return results
+
+    def deapth_first_search_in_order(self):
+        results = []
+
+        def traverse(current_node):
+            if current_node.left:
+                traverse(current_node.left)
+            results.append(current_node.value)
+            if current_node.right:
+                traverse(current_node.right)
+
+        traverse(self.root)
+        return results
