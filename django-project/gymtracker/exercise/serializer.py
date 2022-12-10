@@ -17,6 +17,14 @@ class ExerciseSerializer(serializers.Serializer):
     repetitions = serializers.IntegerField()
     series = serializers.IntegerField()
 
+    def validate(self, data: Dict) -> Dict:
+        """
+        When a validation requires access to multiple fields, need to add this method `validate()`.
+        """
+        if not data["repetitions"] and not data["series"]:
+            raise serializers.ValidationError("You must set repetitions and series")
+        return data
+
 
 def validate_exercise():
     """
@@ -33,4 +41,3 @@ def validate_exercise():
 
     serializer.is_valid(raise_exception=True)
     return serializer.validated_data
-
