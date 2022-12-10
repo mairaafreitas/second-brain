@@ -47,6 +47,16 @@ class ExerciseSerializer(serializers.Serializer):
         ])
         return instance
 
+    def _save(self):
+        """
+        In cases when methods create and update won't create or update an instance but instead do something else like
+        send an email. You can override `.save()`
+        """
+        email = self.validated_data["email"]
+        message = self.validated_data['message']
+        send_email(message_from=email, message=message)
+
+
 def validate_exercise():
     """
     Function `is_valid()` perform validations for each field of the serializer.
