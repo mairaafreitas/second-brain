@@ -25,6 +25,27 @@ class ExerciseSerializer(serializers.Serializer):
             raise serializers.ValidationError("You must set repetitions and series")
         return data
 
+    def create(self, validated_data: Dict) -> Exercise:
+        return Exercise.objects.create(**validated_data)
+
+    def update(self, instance: Exercise, validated_data: Dict) -> Exercise:
+        """
+        To update, need to implement this method `update()`.
+        It's possible to save aditional data when saving the instance.
+        Example:
+             instance.save(date=request.date)
+        """
+        instance.name = validated_data.get("name", instance.name)
+        instance.load = validated_data.get("load", instance.load)
+        instance.repetitions = validated_data.get("repetitions", instance.repetitions)
+        instance.series = validated_data.get("series", instance.series)
+        instance.save(update_fields=[
+            "name",
+            "load",
+            "repetitions",
+            "series",
+        ])
+        return instance
 
 def validate_exercise():
     """
