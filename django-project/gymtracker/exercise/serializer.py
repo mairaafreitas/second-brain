@@ -25,6 +25,18 @@ class ExerciseSerializer(serializers.Serializer):
             raise serializers.ValidationError("You must set repetitions and series")
         return data
 
+    def validate_repetitions(self, value: int) -> int:
+        """
+        It's possible to customize to validate one field, using `validate_<field_name>`.
+        :param value: field that needs validation
+        :return: returns validated field or ValidationError
+
+        If field is required=False, this validation will not work if field is not included.
+        """
+        if value < 0:
+            serializers.ValidationError("Repetitions must be greater than 0.")
+        return value
+
     def create(self, validated_data: Dict) -> Exercise:
         return Exercise.objects.create(**validated_data)
 
