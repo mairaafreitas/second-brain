@@ -2,24 +2,39 @@ from typing import Dict
 
 from exercise.models import Exercise
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 
 def send_email(message_from, message):
     pass
 
 
+def greater_than_zero(value):
+    """
+    Method to use as validator.
+    """
+    if value < 0:
+        raise serializers.ValidationError("Must be grater than 0.")
+
+
 class ExerciseSerializer(serializers.Serializer):
     """
+    Individual fields can include validators, declaring them in the field.
 
+    UniqueValidator enforces the unique=True, `queryset` argument is required.
     """
-    name = serializers.CharField(max_length=50, allow_null=False, allow_blank=False, )
+    name = serializers.CharField(max_length=50, allow_null=False, allow_blank=False,
+                                 validators=[UniqueValidator(queryset=Exercise.objects.all())])
     load = serializers.IntegerField(default=0)
-    repetitions = serializers.IntegerField()
-    series = serializers.IntegerField()
+    repetitions = serializers.IntegerField(required=True)
+    series = serializers.IntegerField(required=True, validators=[greater_than_zero])
+
 
     def validate(self, data: Dict) -> Dict:
         """
         When a validation requires access to multiple fields, need to add this method `validate()`.
+        :param data: dict of all fields values
+        :return: returns validated all fields or ValidationError
         """
         if not data["repetitions"] and not data["series"]:
             raise serializers.ValidationError("You must set repetitions and series")
