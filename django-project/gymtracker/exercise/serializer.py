@@ -1,3 +1,5 @@
+"""Demonstration using class Serializer"""
+
 from typing import Dict
 
 from exercise.models import Exercise
@@ -33,6 +35,9 @@ class ExerciseSerializer(serializers.Serializer):
 
     Serializer class can be used by nested objects. Representation may accept None, then should set `required=False`
     and when a list, pass many=True flag.
+    When need to provide extra context, do this passing `context`as argument when instantiating the serializer.
+    Example:
+        serializer = MuscularGroupSerializer(muscular_group, context={'request': request})
 
     UniqueValidator enforces the unique=True, `queryset` argument is required.
     """
