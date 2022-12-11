@@ -61,6 +61,11 @@ class ExerciseSerializer(serializers.Serializer):
         It's possible to save aditional data when saving the instance.
         Example:
              instance.save(date=request.date)
+
+        Must be passed all required fields to serializer. To user partial updates, must pass as
+        argument `partial=True`.
+        Example:
+            ExerciseSerializer(exercise, data={'load'=10}, partial=True)
         """
         instance.name = validated_data.get("name", instance.name)
         instance.load = validated_data.get("load", instance.load)
