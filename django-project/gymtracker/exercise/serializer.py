@@ -1,6 +1,7 @@
 from typing import Dict
 
 from exercise.models import Exercise
+from exercise.models import MuscularGroup
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -17,9 +18,21 @@ def greater_than_zero(value):
         raise serializers.ValidationError("Must be grater than 0.")
 
 
+class MuscularGroupSerializer(serializers.Serializer):
+    """
+    Example of nested serializer.
+    """
+    name = serializers.CharField(max_length=50, allow_null=False, allow_blank=False)
+
+
 class ExerciseSerializer(serializers.Serializer):
     """
     Individual fields can include validators, declaring them in the field.
+    Example:
+        series = serializers.IntegerField(required=True, validators=[greater_than_zero])
+
+    Serializer class can be used by nested objects. Representation may accept None, then should set `required=False`
+    and when a list, pass many=True flag.
 
     UniqueValidator enforces the unique=True, `queryset` argument is required.
     """
@@ -28,7 +41,7 @@ class ExerciseSerializer(serializers.Serializer):
     load = serializers.IntegerField(default=0)
     repetitions = serializers.IntegerField(required=True)
     series = serializers.IntegerField(required=True, validators=[greater_than_zero])
-
+    muscular_group = MuscularGroupSerializer(many=True, required=False)
 
     def validate(self, data: Dict) -> Dict:
         """
@@ -53,7 +66,16 @@ class ExerciseSerializer(serializers.Serializer):
         return value
 
     def create(self, validated_data: Dict) -> Exercise:
-        return Exercise.objects.create(**validated_data)
+        """
+        Dealing with creating single objects, should be as simple as:
+            Exercise.objects.create(**validated_data)
+
+        When dealing with nested representation, you need to handle saving multiple objects.
+        """
+        muscular_group = validated_data.pop("muscular_group")
+        exercise = Exercise.objects.create(**validated_data)
+        MuscularGroup.objects.create(exercise=exercise, **muscular_group)
+        return exercise
 
     def update(self, instance: Exercise, validated_data: Dict) -> Exercise:
         """
@@ -62,11 +84,20 @@ class ExerciseSerializer(serializers.Serializer):
         Example:
              instance.save(date=request.date)
 
-        Must be passed all required fields to serializer. To user partial updates, must pass as
-        argument `partial=True`.
+        Must be passed all required fields to serializer. To user partial updates, must pass as argument `partial=True`.
         Example:
             ExerciseSerializer(exercise, data={'load'=10}, partial=True)
+
+        To update nested representations, need to think about the behavior you want to happen when the data is None or
+        not provided. What should happen?
+            - Set the relationship to NULL in the database.
+            - Delete the associated instance.
+            - Ignore the data and leave the instance as it is.
+            - Raise a validation error.
+            - Raise a validation error.
         """
+        muscular_group_data = validated_data.pop("muscular_group")
+        muscular_group = instance.muscular_group
         instance.name = validated_data.get("name", instance.name)
         instance.load = validated_data.get("load", instance.load)
         instance.repetitions = validated_data.get("repetitions", instance.repetitions)
@@ -77,6 +108,9 @@ class ExerciseSerializer(serializers.Serializer):
             "repetitions",
             "series",
         ])
+        muscular_group.name = muscular_group_data.get("name", muscular_group.name)
+        muscular_group.save()
+
         return instance
 
     def _save(self):
