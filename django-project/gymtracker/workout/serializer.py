@@ -74,3 +74,18 @@ class WorkoutSerializer(serializers.ModelSerializer):
         for exercise_data in exercises_data:
             Exercise.objects.create(workout=workout, **exercise_data)
         return workout
+
+    def to_representation(self, instance):
+        """
+        Takes the object instance that requires serialization, and should return a primitive representation.
+        Overriding this method allows us to change the serialization output
+        """
+        representation = super().to_representation(instance)
+        representation['load'] = int(instance.weight) * int(instance.repetitions) * int(instance.series)
+
+    def to_internal_value(self, data):
+        """
+        Used to do some pre-processing before validation. Could be used to extract some information.
+        """
+        exercise_data = data['exercise']
+        return super().to_internal_value(exercise_data)
