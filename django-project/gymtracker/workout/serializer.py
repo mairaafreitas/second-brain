@@ -1,15 +1,39 @@
 """Demonstration using class ModelSerializer"""
+from typing import Dict
 
-from workout.models import Workout
+from exercise.models import Exercise
 from rest_framework import serializers
+from workout.models import Workout
 
-class UserSerializer(serializers.ModelSerializer):
+
+class ExerciseSerializer(serializers.ModelSerializer):
     """
     Nested Serializer
     """
+
     class Meta:
-        model = User
-        fields = ["name", "birth_date"]
+        model = Exercise
+        fields = ["name", "weight", "repetitions", "series"]
+
+
+class ExercisesSerializer(serializers.RelatedField):
+    """
+    RelatedField to custom relational field that describes output representation.
+    To do this, need to override 'RelatedField' and add to_representation(self, value) method.
+    """
+
+    def to_representation(self, value):
+        """
+        :param value: model instance, Exercises
+        :return: your custom representation
+        """
+        load = int(value.weight) * int(value.repetitions) * int(value.series)
+        return "Exercise: %s x %s x %s -> total load: %s)" % (value.series, value.repetitions, value.weight, load)
+
+    def to_internal_value(self, data):
+        """
+        If is needed a read-write relational field, need to implement this method.
+        """
 
 class WorkoutSerializer(serializers.ModelSerializer):
     """
@@ -30,7 +54,7 @@ class WorkoutSerializer(serializers.ModelSerializer):
         full_name = serializers.CharField(source='get_full_name', read_only=True)
     """
     name = serializers.CharField(read_only=True)
-    user = UserSerializer()
+    exercise = ExerciseSerializer(many=True)
 
     class Meta:
         model = Workout
@@ -39,3 +63,14 @@ class WorkoutSerializer(serializers.ModelSerializer):
         read_only_fields = ["end_at"]
         depth = 1
         extra_kwargs = {"name": {"read_only": True}}  # will be ignored since the field is explicitly declared
+
+    def create(self, validated_data: Dict) -> Workout:
+        """
+        By default nested serializers are read-only. You need to explicitly specify how the child relationships should
+        be saved.
+        """
+        exercises_data = validated_data.pop('exercise')
+        workout = Workout.objects.create(**validated_data)
+        for exercise_data in exercises_data:
+            Exercise.objects.create(workout=workout, **exercise_data)
+        return workout
