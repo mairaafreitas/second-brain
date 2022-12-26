@@ -43,7 +43,7 @@ class ExerciseSerializer(serializers.Serializer):
     """
     name = serializers.CharField(max_length=50, allow_null=False, allow_blank=False,
                                  validators=[UniqueValidator(queryset=Exercise.objects.all())])
-    load = serializers.IntegerField(default=0)
+    weight = serializers.IntegerField(default=0)
     repetitions = serializers.IntegerField(required=True)
     series = serializers.IntegerField(required=True, validators=[greater_than_zero])
     muscular_group = MuscularGroupSerializer(many=True, required=False)
@@ -80,13 +80,13 @@ class ExerciseSerializer(serializers.Serializer):
         Other alternative is to write custom model manager classes that handle create, check on managers.py.
         Use example at create():
             return Exercise.objects.create(name=validated_data["name"],
-                                load=validated_data["load"],
+                                weight=validated_data["weight"],
                                 repetition=validated_data["repetition"],
                                 series=validated_data["series"],
                                 muscular_name=validated_data["muscular_group"]["name"])
         """
         Exercise.objects.create(name=validated_data["name"],
-                                load=validated_data["load"],
+                                weight=validated_data["weight"],
                                 repetition=validated_data["repetition"],
                                 series=validated_data["series"],
                                 muscular_name=validated_data["muscular_group"]["name"])
@@ -104,7 +104,7 @@ class ExerciseSerializer(serializers.Serializer):
 
         Must be passed all required fields to serializer. To user partial updates, must pass as argument `partial=True`.
         Example:
-            ExerciseSerializer(exercise, data={'load'=10}, partial=True)
+            ExerciseSerializer(exercise, data={'weight'=10}, partial=True)
 
         To update nested representations, need to think about the behavior you want to happen when the data is None or
         not provided. What should happen?
@@ -117,12 +117,12 @@ class ExerciseSerializer(serializers.Serializer):
         muscular_group_data = validated_data.pop("muscular_group")
         muscular_group = instance.muscular_group
         instance.name = validated_data.get("name", instance.name)
-        instance.load = validated_data.get("load", instance.load)
+        instance.weight = validated_data.get("weight", instance.weight)
         instance.repetitions = validated_data.get("repetitions", instance.repetitions)
         instance.series = validated_data.get("series", instance.series)
         instance.save(update_fields=[
             "name",
-            "load",
+            "weight",
             "repetitions",
             "series",
         ])
@@ -151,7 +151,7 @@ def validate_exercise():
 
     `raise_exception` is optional.
     """
-    data = {"name": "supino", "load": 10, "repetitions": 12, "series": 4}
+    data = {"name": "supino", "weight": 10, "repetitions": 12, "series": 4}
     serializer = ExerciseSerializer(data=data)
 
     serializer.is_valid(raise_exception=True)

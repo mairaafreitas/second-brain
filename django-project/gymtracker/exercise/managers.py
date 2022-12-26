@@ -4,8 +4,8 @@ from exercise.models import MuscularGroup
 
 
 class ExerciseManager(models.Manager):
-    def create(self, name, load, repetition, series, muscular_name):
-        exercise = Exercise(name=name, load=load, repetition=repetition, series=series)
+    def create(self, name, weight, repetition, series, muscular_name):
+        exercise = Exercise(name=name, weight=weight, repetition=repetition, series=series)
         exercise.save()
         muscular_group = MuscularGroup(
             name=muscular_name,
