@@ -3,9 +3,10 @@ import uuid
 from django.db import models
 from exercise.models import Exercise
 from model_utils import Choices
+from core.common_models import StandardModelMixin
 
 
-class Workout(models.Model):
+class Workout(StandardModelMixin):
     # 3-tuples (db_value, python_identifier, "human_readable_string")
     GOAL_CHOICES = Choices(
         ("loseWeight", "LOSE_WEIGHT", "Emagrecimento"),
