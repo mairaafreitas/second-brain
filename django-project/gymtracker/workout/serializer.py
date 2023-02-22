@@ -28,12 +28,18 @@ class ExercisesSerializer(serializers.RelatedField):
         :return: your custom representation
         """
         load = int(value.weight) * int(value.repetitions) * int(value.series)
-        return "Exercise: %s x %s x %s -> total load: %s)" % (value.series, value.repetitions, value.weight, load)
+        return "Exercise: %s x %s x %s -> total load: %s)" % (
+            value.series,
+            value.repetitions,
+            value.weight,
+            load,
+        )
 
     def to_internal_value(self, data):
         """
         If is needed a read-write relational field, need to implement this method.
         """
+
 
 class WorkoutSerializer(serializers.ModelSerializer):
     """
@@ -53,6 +59,7 @@ class WorkoutSerializer(serializers.ModelSerializer):
     Example:
         full_name = serializers.CharField(source='get_full_name', read_only=True)
     """
+
     name = serializers.CharField(read_only=True)
     exercise = ExerciseSerializer(many=True)
 
@@ -62,14 +69,16 @@ class WorkoutSerializer(serializers.ModelSerializer):
         exclude = ["id"]
         read_only_fields = ["end_at"]
         depth = 1
-        extra_kwargs = {"name": {"read_only": True}}  # will be ignored since the field is explicitly declared
+        extra_kwargs = {
+            "name": {"read_only": True}
+        }  # will be ignored since the field is explicitly declared
 
     def create(self, validated_data: Dict) -> Workout:
         """
         By default nested serializers are read-only. You need to explicitly specify how the child relationships should
         be saved.
         """
-        exercises_data = validated_data.pop('exercise')
+        exercises_data = validated_data.pop("exercise")
         workout = Workout.objects.create(**validated_data)
         for exercise_data in exercises_data:
             Exercise.objects.create(workout=workout, **exercise_data)
@@ -81,11 +90,13 @@ class WorkoutSerializer(serializers.ModelSerializer):
         Overriding this method allows us to change the serialization output
         """
         representation = super().to_representation(instance)
-        representation['load'] = int(instance.weight) * int(instance.repetitions) * int(instance.series)
+        representation["load"] = (
+            int(instance.weight) * int(instance.repetitions) * int(instance.series)
+        )
 
     def to_internal_value(self, data):
         """
         Used to do some pre-processing before validation. Could be used to extract some information.
         """
-        exercise_data = data['exercise']
+        exercise_data = data["exercise"]
         return super().to_internal_value(exercise_data)

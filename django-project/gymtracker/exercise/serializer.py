@@ -2,8 +2,7 @@
 
 from typing import Dict
 
-from exercise.models import Exercise
-from exercise.models import MuscularGroup
+from exercise.models import Exercise, MuscularGroup
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
@@ -24,7 +23,10 @@ class MuscularGroupSerializer(serializers.Serializer):
     """
     Example of nested serializer.
     """
-    muscular_name = serializers.CharField(max_length=50, allow_null=False, allow_blank=False, source="name")
+
+    muscular_name = serializers.CharField(
+        max_length=50, allow_null=False, allow_blank=False, source="name"
+    )
 
 
 class ExerciseSerializer(serializers.Serializer):
@@ -41,8 +43,13 @@ class ExerciseSerializer(serializers.Serializer):
 
     UniqueValidator enforces the unique=True, `queryset` argument is required.
     """
-    name = serializers.CharField(max_length=50, allow_null=False, allow_blank=False,
-                                 validators=[UniqueValidator(queryset=Exercise.objects.all())])
+
+    name = serializers.CharField(
+        max_length=50,
+        allow_null=False,
+        allow_blank=False,
+        validators=[UniqueValidator(queryset=Exercise.objects.all())],
+    )
     weight = serializers.IntegerField(default=0)
     repetitions = serializers.IntegerField(required=True)
     series = serializers.IntegerField(required=True, validators=[greater_than_zero])
@@ -85,11 +92,13 @@ class ExerciseSerializer(serializers.Serializer):
                                 series=validated_data["series"],
                                 muscular_name=validated_data["muscular_group"]["name"])
         """
-        Exercise.objects.create(name=validated_data["name"],
-                                weight=validated_data["weight"],
-                                repetition=validated_data["repetition"],
-                                series=validated_data["series"],
-                                muscular_name=validated_data["muscular_group"]["name"])
+        Exercise.objects.create(
+            name=validated_data["name"],
+            weight=validated_data["weight"],
+            repetition=validated_data["repetition"],
+            series=validated_data["series"],
+            muscular_name=validated_data["muscular_group"]["name"],
+        )
         muscular_group = validated_data.pop("muscular_group")
         exercise = Exercise.objects.create(**validated_data)
         MuscularGroup.objects.create(exercise=exercise, **muscular_group)
@@ -120,13 +129,17 @@ class ExerciseSerializer(serializers.Serializer):
         instance.weight = validated_data.get("weight", instance.weight)
         instance.repetitions = validated_data.get("repetitions", instance.repetitions)
         instance.series = validated_data.get("series", instance.series)
-        instance.save(update_fields=[
-            "name",
-            "weight",
-            "repetitions",
-            "series",
-        ])
-        muscular_group.name = muscular_group_data.get("muscular_name", muscular_group.name)
+        instance.save(
+            update_fields=[
+                "name",
+                "weight",
+                "repetitions",
+                "series",
+            ]
+        )
+        muscular_group.name = muscular_group_data.get(
+            "muscular_name", muscular_group.name
+        )
         muscular_group.save()
 
         return instance
@@ -137,7 +150,7 @@ class ExerciseSerializer(serializers.Serializer):
         send an email. You can override `.save()`
         """
         email = self.validated_data["email"]
-        message = self.validated_data['message']
+        message = self.validated_data["message"]
         send_email(message_from=email, message=message)
 
 

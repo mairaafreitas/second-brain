@@ -1,6 +1,3 @@
-from os import remove
-
-
 class Graph:
     def __init__(self) -> None:
         self.adj_list = {}
