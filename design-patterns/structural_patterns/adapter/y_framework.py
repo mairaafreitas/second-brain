@@ -1,5 +1,6 @@
 from src import some_route
 
+
 def post_http():
     http_message = {
         "HTTP_method": "POST",

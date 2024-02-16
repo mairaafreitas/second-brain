@@ -1,7 +1,7 @@
-from .transport.public import Public
-from .transport.car import Car
-from .transport.bike import Bike
-from .route_selection import RouteSelection
+from src.transport.public import Public
+from src.transport.car import Car
+from src.transport.bike import Bike
+from src.route_selection import RouteSelection
 
 
 if __name__ == '__main__':
